@@ -40,6 +40,7 @@ define Build/Compile
 	$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \
 		HOST_CC="$(HOSTCC) $(HOST_CFLAGS) $(HOST_BITS)" \
 		CROSS="$(TARGET_CROSS)" \
+		TARGET_SYS=Linux \
 		DPREFIX=$(PKG_INSTALL_DIR)/usr \
 		PREFIX=/usr \
 		TARGET_SYS=Linux \
@@ -48,6 +49,7 @@ define Build/Compile
 	rm -rf $(PKG_INSTALL_DIR)
 	mkdir -p $(PKG_INSTALL_DIR)
 	$(MAKE) -C $(PKG_BUILD_DIR) \
+		TARGET_SYS=Linux \
 		DPREFIX=$(PKG_INSTALL_DIR)/usr \
 		PREFIX=/usr \
 		TARGET_SYS=Linux \

@@ -1,0 +1,22 @@
+--- a/src/lj_arch.h
++++ b/src/lj_arch.h
+@@ -385,6 +385,11 @@
+ #endif
+ 
+ /* Check for minimum required compiler versions. */
++#if __clang__
++#if ((__clang_major__ < 3) || ((__clang_major__ == 3) && __clang_minor__ < 5))
++#error "Need at least Clang 3.5 or newer"
++#endif
++#else
+ #if defined(__GNUC__)
+ #if LJ_TARGET_X86
+ #if (__GNUC__ < 3) || ((__GNUC__ == 3) && __GNUC_MINOR__ < 4)
+@@ -414,6 +419,7 @@
+ #endif
+ #endif
+ #endif
++#endif
+ 
+ /* Check target-specific constraints. */
+ #ifndef _BUILDVM_H
