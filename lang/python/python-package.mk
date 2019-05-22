@@ -35,6 +35,10 @@ ifdef CONFIG_USE_MIPS16
   TARGET_CFLAGS += -mno-mips16 -mno-interlink-mips16
 endif
 
+ifeq ($(ARCH),aarch64)
+  TARGET_CFLAGS += -fPIC
+endif
+
 define PyPackage
 
   define Package/$(1)-src
