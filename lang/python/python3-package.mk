@@ -34,6 +34,8 @@ PYTHON3_VARS = \
 	CCSHARED="$(TARGET_CC) $(FPIC)" \
 	CXX="$(TARGET_CXX)" \
 	LD="$(TARGET_CC)" \
+	AR="$(TARGET_AR)" \
+	RANLIB="$(TARGET_RANLIB)" \
 	LDSHARED="$(TARGET_CC) -shared" \
 	CFLAGS="$(TARGET_CFLAGS)" \
 	CPPFLAGS="$(TARGET_CPPFLAGS) -I$(PYTHON3_INC_DIR)" \
@@ -185,7 +187,6 @@ define Py3Package
     endef
   endif # Package/$(1)/install
 endef
-
 
 # Py3Build
 
