@@ -12,8 +12,8 @@ PKG_VERSION:=2.1.2
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=ssh://git@ph.marketlab.pl/diffusion/113/runit.git
-PKG_SOURCE_VERSION:=453537080384ad3e2958dd81fd3682b9b020bdfc
+PKG_SOURCE_URL:=https://github.com/MarketLab/runit.git
+PKG_SOURCE_VERSION:=75199802b69420578a9a84c7dad9c5c9c2e0415f
 
 include $(INCLUDE_DIR)/package.mk
 
