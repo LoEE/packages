@@ -21,46 +21,24 @@ PKG_LICENSE:=BSD License
 PKG_LICENSE_FILES:=LICENSE
 
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
 PKG_UNPACK:=unzip -d $(BUILD_DIR)/$(BUILD_VARIANT)-numpy-$(PKG_VERSION) $(DL_DIR)/$(PKG_SOURCE)
 
-define Package/python-numpy/Default
+define Package/python3-numpy
+  TITLE:=python3-numpy
   SECTION:=lang-python
   CATEGORY:=Languages
   SUBMENU:=Python
   URL:=https://www.numpy.org/
-endef
-
-define Package/python-numpy
-$(call Package/python-numpy/Default)
-  TITLE:=python-numpy
-  DEPENDS:=+@INSTALL_GFORTRAN +libgfortran +PACKAGE_python-numpy:python
-  VARIANT:=python
-endef
-
-define Package/python3-numpy
-$(call Package/python-numpy/Default)
-  TITLE:=python3-numpy
   DEPENDS:=+@INSTALL_GFORTRAN +libgfortran +PACKAGE_python3-numpy:python3
   VARIANT:=python3
 endef
 
-define Package/python-numpy/description
-NumPy is the fundamental package for array computing with Python.
-endef
-
 define Package/python3-numpy/description
-$(call Package/python-numpy/description)
+NumPy is the fundamental package for array computing with Python.
 .
 (Variant for Python3)
-endef
-
-define PyBuild/Compile
-	$(call Build/Compile/PyMod,,\
-		install --prefix=/usr --root=$(PKG_INSTALL_DIR),\
-	)
 endef
 
 define Py3Build/Compile
@@ -69,9 +47,6 @@ define Py3Build/Compile
 	)
 endef
 
-$(eval $(call PyPackage,python-numpy))
-$(eval $(call BuildPackage,python-numpy))
-$(eval $(call BuildPackage,python-numpy-src))
 
 $(eval $(call Py3Package,python3-numpy))
 $(eval $(call BuildPackage,python3-numpy))
