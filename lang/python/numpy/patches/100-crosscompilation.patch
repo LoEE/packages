@@ -2,7 +2,7 @@
 +++ b/numpy/_build_utils/apple_accelerate.py
 @@ -1,4 +1,5 @@
  from __future__ import division, absolute_import, print_function
-+target_platform = "linux"
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
  
  import os
  import sys
@@ -19,7 +19,7 @@
 +++ b/numpy/core/setup.py
 @@ -1,4 +1,5 @@
  from __future__ import division, print_function
-+target_platform = "linux"
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
  
  import os
  import sys
@@ -74,7 +74,7 @@
 +++ b/numpy/distutils/ccompiler.py
 @@ -1,4 +1,5 @@
  from __future__ import division, absolute_import, print_function
-+target_platform = "linux"
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
  
  import os
  import re
@@ -110,7 +110,7 @@
  # compilers (they must define linker_exe first).
  # Pearu Peterson
  from __future__ import division, absolute_import, print_function
-+target_platform = "linux"
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
  
  import os, signal
  import warnings
@@ -129,7 +129,7 @@
  
  """
  from __future__ import division, absolute_import, print_function
-+target_platform = "linux"
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
  
  __all__ = ['FCompiler', 'new_fcompiler', 'show_fcompilers',
             'dummy_fortran_file']
@@ -166,7 +166,7 @@
  compilers = ['GnuFCompiler', 'Gnu95FCompiler']
  
  TARGET_R = re.compile(r"Target: ([a-zA-Z0-9_\-]*)")
-+target_platform = "linux"
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
  
  # XXX: handle cross compilation
  
@@ -177,7 +177,7 @@
  
  
  if is_win64():
-@@ -104,11 +105,11 @@ class GnuFCompiler(FCompiler):
+@@ -104,11 +107,11 @@ class GnuFCompiler(FCompiler):
  
      # Cygwin: f771: warning: -fPIC ignored for target (all code is
      # position independent)
@@ -191,7 +191,7 @@
          for key in ['version_cmd', 'compiler_f77', 'linker_so', 'linker_exe']:
              executables[key].append('-mno-cygwin')
  
-@@ -117,7 +118,7 @@ class GnuFCompiler(FCompiler):
+@@ -117,7 +120,7 @@ class GnuFCompiler(FCompiler):
  
      def get_flags_linker_so(self):
          opt = self.linker_so[1:]
@@ -200,7 +200,7 @@
              target = os.environ.get('MACOSX_DEPLOYMENT_TARGET', None)
              # If MACOSX_DEPLOYMENT_TARGET is set, we simply trust the value
              # and leave it alone.  But, distutils will complain if the
-@@ -149,7 +150,7 @@ class GnuFCompiler(FCompiler):
+@@ -149,7 +152,7 @@ class GnuFCompiler(FCompiler):
              opt.extend(['-undefined', 'dynamic_lookup', '-bundle'])
          else:
              opt.append("-shared")
@@ -209,7 +209,7 @@
              # SunOS often has dynamically loaded symbols defined in the
              # static library libg2c.a  The linker doesn't like this.  To
              # ignore the problem, use the -mimpure-text flag.  It isn't
-@@ -171,9 +172,9 @@ class GnuFCompiler(FCompiler):
+@@ -171,9 +174,9 @@ class GnuFCompiler(FCompiler):
          return None
  
      def get_libgfortran_dir(self):
@@ -221,7 +221,7 @@
              libgfortran_name = 'libgfortran.dylib'
          else:
              libgfortran_name = None
-@@ -193,11 +194,11 @@ class GnuFCompiler(FCompiler):
+@@ -193,11 +196,11 @@ class GnuFCompiler(FCompiler):
  
      def get_library_dirs(self):
          opt = []
@@ -235,7 +235,7 @@
                      d = os.path.normpath(d)
                      path = os.path.join(d, "lib%s.a" % self.g2c)
                      if not os.path.exists(path):
-@@ -227,10 +228,10 @@ class GnuFCompiler(FCompiler):
+@@ -227,10 +230,10 @@ class GnuFCompiler(FCompiler):
          if g2c is not None:
              opt.append(g2c)
          c_compiler = self.c_compiler
@@ -248,7 +248,7 @@
              opt.append('cc_dynamic')
          return opt
  
-@@ -265,14 +266,14 @@ class GnuFCompiler(FCompiler):
+@@ -265,14 +268,14 @@ class GnuFCompiler(FCompiler):
          return []
  
      def runtime_library_dir_option(self, dir):
@@ -265,7 +265,7 @@
          return '-Wl,-rpath%s%s' % (sep, dir)
  
  
-@@ -292,7 +293,7 @@ class Gnu95FCompiler(GnuFCompiler):
+@@ -292,7 +295,7 @@ class Gnu95FCompiler(GnuFCompiler):
          else:
              # use -mno-cygwin flag for gfortran when Python is not
              # Cygwin-Python
@@ -274,7 +274,18 @@
                  for key in [
                          'version_cmd', 'compiler_f77', 'compiler_f90',
                          'compiler_fix', 'linker_so', 'linker_exe'
-@@ -318,7 +319,7 @@ class Gnu95FCompiler(GnuFCompiler):
+@@ -309,7 +312,9 @@ class Gnu95FCompiler(GnuFCompiler):
+                           "-fno-second-underscore"] + _EXTRAFLAGS,
+         'compiler_fix' : [None, "-Wall",  "-g","-ffixed-form",
+                           "-fno-second-underscore"] + _EXTRAFLAGS,
+-        'linker_so'    : ["<F90>", "-Wall", "-g"],
++        # Shared was needed for the host build, for some reason get_flags_linker_so is not used.
++        # Even if it was it would not help on Darwin.
++        'linker_so'    : ["<F90>", "-Wall", "-g", "-shared"],
+         'archiver'     : ["ar", "-cr"],
+         'ranlib'       : ["ranlib"],
+         'linker_exe'   : [None, "-Wall"]
+@@ -318,7 +323,7 @@ class Gnu95FCompiler(GnuFCompiler):
      module_dir_switch = '-J'
      module_include_switch = '-I'
  
@@ -283,7 +294,7 @@
          executables['linker_so'].append('-lpthread')
          if platform.architecture()[0][:2] == '64':
              for key in ['compiler_f77', 'compiler_f90','compiler_fix','linker_so', 'linker_exe']:
-@@ -328,7 +329,7 @@ class Gnu95FCompiler(GnuFCompiler):
+@@ -328,7 +333,7 @@ class Gnu95FCompiler(GnuFCompiler):
  
      def _universal_flags(self, cmd):
          """Return a list of -arch flags for every supported architecture."""
@@ -292,7 +303,7 @@
              return []
          arch_flags = []
          # get arches the C compiler gets.
-@@ -358,7 +359,7 @@ class Gnu95FCompiler(GnuFCompiler):
+@@ -358,7 +363,7 @@ class Gnu95FCompiler(GnuFCompiler):
  
      def get_library_dirs(self):
          opt = GnuFCompiler.get_library_dirs(self)
@@ -301,7 +312,7 @@
              c_compiler = self.c_compiler
              if c_compiler and c_compiler.compiler_type == "msvc":
                  target = self.get_target()
-@@ -377,9 +378,9 @@ class Gnu95FCompiler(GnuFCompiler):
+@@ -377,9 +382,9 @@ class Gnu95FCompiler(GnuFCompiler):
  
      def get_libraries(self):
          opt = GnuFCompiler.get_libraries(self)
@@ -317,7 +328,7 @@
 +++ b/numpy/distutils/misc_util.py
 @@ -1,4 +1,5 @@
  from __future__ import division, absolute_import, print_function
-+target_platform = "linux"
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
  
  import os
  import re
@@ -379,7 +390,7 @@
  
  """
  from __future__ import division, absolute_import, print_function
-+target_platform = "linux"
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
  
  import sys
  import os
@@ -478,7 +489,7 @@
 +++ b/numpy/linalg/setup.py
 @@ -1,4 +1,5 @@
  from __future__ import division, print_function
-+target_platform = "linux"
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
  
  import os
  import sys
@@ -495,7 +506,7 @@
 +++ b/numpy/random/setup.py
 @@ -1,4 +1,5 @@
  from __future__ import division, print_function
-+target_platform = "linux"
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
  
  from os.path import join
  import sys
@@ -522,7 +533,7 @@
  
  """
  from __future__ import division, print_function
-+target_platform = "linux"
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
  
  DOCLINES = (__doc__ or '').split("\n")
  

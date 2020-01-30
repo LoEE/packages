@@ -44,7 +44,7 @@ endef
 define Py3Build/Compile
 	$(call Build/Compile/Py3Mod,,\
 		install --prefix=/usr --root=$(PKG_INSTALL_DIR),\
-		F90="$(TARGET_CROSS)gfortran"\
+		F90="$(TARGET_CROSS)gfortran" TARGET_PLATFORM=linux\
 	)
 endef
 
