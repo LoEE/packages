@@ -145,7 +145,7 @@ PYTHON_FOR_BUILD:= \
 	_PYTHON_PROJECT_BASE=$(PKG_BUILD_DIR) \
 	_PYTHON_HOST_PLATFORM=linux2 \
 	PYTHONPATH="$(PKG_BUILD_DIR)/Lib:$(PKG_BUILD_DIR)/build/lib.linux2-$(PYTHON_VERSION)" \
-	_PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata \
+	_PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata__linux_ \
 	$(HOST_PYTHON3_BIN)
 
 DISABLE_BLUETOOTH:= \
@@ -239,7 +239,7 @@ PYTHON3_BASE_LIB_FILES:= \
 	/usr/lib/python$(PYTHON_VERSION)/encodings \
 	/usr/lib/python$(PYTHON_VERSION)/_collections_abc.py \
 	/usr/lib/python$(PYTHON_VERSION)/_sitebuiltins.py \
-	/usr/lib/python$(PYTHON_VERSION)/_sysconfigdata.py \
+	/usr/lib/python$(PYTHON_VERSION)/lib-dynload/_sysconfigdata__linux_.py \
 	/usr/lib/python$(PYTHON_VERSION)/_weakrefset.py \
 	/usr/lib/python$(PYTHON_VERSION)/abc.py \
 	/usr/lib/python$(PYTHON_VERSION)/codecs.py \
