@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=runit
-PKG_VERSION:=2.1.2
+PKG_VERSION:=2.1.2p1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
@@ -21,9 +21,9 @@ define Package/runit
 	SECTION:=admin
 	CATEGORY:=Administration
 	TITLE:=runit process supervisor
-	DEPENDS:=+libc
 	URL:=http://smarden.org/runit/
 	MAINTAINER:=Jakub Piotr Cłapa <jpc@loee.pl>
+	DEPENDS:=+@BUSYBOX_DEFAULT_RUN_PARTS
 endef
 
 define Package/runit/description
@@ -53,16 +53,34 @@ define Build/Compile
 endef
 
 define Package/runit/install
-	$(INSTALL_DIR) $(1)/bin
-	$(CP) $(PKG_BUILD_DIR)/src/chpst $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/runit $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/runit-init $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/runsv $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/runsvchdir $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/runsvdir $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/sv $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/svlogd $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/utmpset $(1)/bin/
+	$(INSTALL_DIR) $(1)/bin/ $(1)/usr/bin/ $(1)/etc/init.d/
+	$(INSTALL_BIN) ./files/make_runit_service $(1)/usr/bin/make_runit_service
+	$(INSTALL_BIN) ./files/runsvdir-init.d $(1)/etc/init.d/runsvdir
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/sv $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/svlogd $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/chpst $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/runsv $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/runsvdir $(1)/bin/
+endef
+
+define Package/runit/postinst
+#!/bin/sh
+# check if we are on real system
+if [ -z "$${IPKG_INSTROOT}" ]; then
+	echo "Enabling rc.d symlink for runsvdir"
+	/etc/init.d/runsvdir enable
+fi
+exit 0
+endef
+
+define Package/runit/prerm
+#!/bin/sh
+# check if we are on real system
+if [ -z "$${IPKG_INSTROOT}" ]; then
+	echo "Removing rc.d symlink for runsvdir"
+	/etc/init.d/runsvdir disable
+fi
+exit 0
 endef
 
 $(eval $(call BuildPackage,runit))
