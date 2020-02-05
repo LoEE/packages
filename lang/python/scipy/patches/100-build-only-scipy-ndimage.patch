@@ -1,0 +1,53 @@
+--- a/scipy/setup.py
++++ b/scipy/setup.py
+@@ -6,22 +6,22 @@ def configuration(parent_package='',top_
+ 
+     from numpy.distutils.misc_util import Configuration
+     config = Configuration('scipy',parent_package,top_path)
+-    config.add_subpackage('cluster')
+-    config.add_subpackage('constants')
+-    config.add_subpackage('fftpack')
+-    config.add_subpackage('integrate')
+-    config.add_subpackage('interpolate')
+-    config.add_subpackage('io')
+-    config.add_subpackage('linalg')
+-    config.add_data_files('*.pxd')
+-    config.add_subpackage('misc')
+-    config.add_subpackage('odr')
+-    config.add_subpackage('optimize')
+-    config.add_subpackage('signal')
+-    config.add_subpackage('sparse')
+-    config.add_subpackage('spatial')
+-    config.add_subpackage('special')
+-    config.add_subpackage('stats')
++    # config.add_subpackage('cluster')
++    # config.add_subpackage('constants')
++    # config.add_subpackage('fftpack')
++    # config.add_subpackage('integrate')
++    # config.add_subpackage('interpolate')
++    # config.add_subpackage('io')
++    # config.add_subpackage('linalg')
++    # config.add_data_files('*.pxd')
++    # config.add_subpackage('misc')
++    # config.add_subpackage('odr')
++    # config.add_subpackage('optimize')
++    # config.add_subpackage('signal')
++    # config.add_subpackage('sparse')
++    # config.add_subpackage('spatial')
++    # config.add_subpackage('special')
++    # config.add_subpackage('stats')
+     config.add_subpackage('ndimage')
+     config.add_subpackage('_build_utils')
+     config.add_subpackage('_lib')
+--- a/setup.py
++++ b/setup.py
+@@ -400,7 +400,8 @@ def configuration(parent_package='', top
+         if sys.platform == "darwin":
+             msg = ('No lapack/blas resources found. '
+                    'Note: Accelerate is no longer supported.')
+-        raise NotFoundError(msg)
++        print(msg)
++        # raise NotFoundError(msg)
+ 
+     config = Configuration(None, parent_package, top_path)
+     config.set_options(ignore_setup_xxx_py=True,
