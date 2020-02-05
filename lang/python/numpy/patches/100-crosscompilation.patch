@@ -1,12 +1,13 @@
 --- a/numpy/_build_utils/apple_accelerate.py
 +++ b/numpy/_build_utils/apple_accelerate.py
-@@ -1,4 +1,5 @@
- from __future__ import division, absolute_import, print_function
-+target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
- 
- import os
+@@ -4,12 +4,14 @@ import os
  import sys
-@@ -9,7 +10,7 @@ __all__ = ['uses_accelerate_framework',
+ import re
+ 
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
++
+ __all__ = ['uses_accelerate_framework', 'get_sgemv_fix']
+ 
  def uses_accelerate_framework(info):
      """ Returns True if Accelerate framework is used for BLAS/LAPACK """
      # If we're not building on Darwin (macOS), don't use Accelerate
@@ -17,13 +18,16 @@
      # don't use Accelerate.
 --- a/numpy/core/setup.py
 +++ b/numpy/core/setup.py
-@@ -1,4 +1,5 @@
- from __future__ import division, print_function
-+target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
+@@ -16,6 +16,8 @@ from numpy._build_utils.apple_accelerate
+ from numpy.compat import npy_load_module
+ from setup_common import *
  
- import os
- import sys
-@@ -68,7 +69,7 @@ class CallOnceOnly(object):
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
++
+ # Set to True to enable relaxed strides checking. This (mostly) means
+ # that `strides[dim]` is ignored if `shape[dim] == 1` when setting flags.
+ NPY_RELAXED_STRIDES_CHECKING = (os.environ.get('NPY_RELAXED_STRIDES_CHECKING', "1") != "0")
+@@ -68,7 +70,7 @@ class CallOnceOnly(object):
  
  def pythonlib_dir():
      """return path where libpython* is."""
@@ -32,7 +36,7 @@
          return os.path.join(sys.prefix, "libs")
      else:
          return get_config_var('LIBDIR')
-@@ -76,7 +77,7 @@ def pythonlib_dir():
+@@ -76,7 +78,7 @@ def pythonlib_dir():
  def is_npy_no_signal():
      """Return True if the NPY_NO_SIGNAL symbol must be defined in configuration
      header."""
@@ -41,7 +45,7 @@
  
  def is_npy_no_smp():
      """Return True if the NPY_NO_SMP symbol must be defined in public
-@@ -94,8 +95,8 @@ def win32_checks(deflist):
+@@ -94,8 +96,8 @@ def win32_checks(deflist):
      a = get_build_architecture()
  
      # Distutils hack on AMD64 on windows
@@ -52,7 +56,7 @@
      if a == 'AMD64':
          deflist.append('DISTUTILS_USE_SDK')
  
-@@ -435,7 +436,7 @@ def configuration(parent_package='',top_
+@@ -435,7 +437,7 @@ def configuration(parent_package='',top_
                  moredefs.append('__NPY_PRIVATE_NO_SIGNAL')
  
              # Windows checks
@@ -61,7 +65,7 @@
                  win32_checks(moredefs)
  
              # C99 restrict keyword
-@@ -616,7 +617,7 @@ def configuration(parent_package='',top_
+@@ -616,7 +618,7 @@ def configuration(parent_package='',top_
  
      config.add_define_macros([("NPY_INTERNAL_BUILD", "1")]) # this macro indicates that Numpy build is in process
      config.add_define_macros([("HAVE_NPY_CONFIG_H", "1")])
@@ -72,13 +76,16 @@
          config.add_define_macros([("_FILE_OFFSET_BITS", "64")])
 --- a/numpy/distutils/ccompiler.py
 +++ b/numpy/distutils/ccompiler.py
-@@ -1,4 +1,5 @@
- from __future__ import division, absolute_import, print_function
-+target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
+@@ -24,6 +24,8 @@ from numpy.distutils.misc_util import cy
+                                       get_num_build_jobs, \
+                                       _commandline_dep_string
  
- import os
- import re
-@@ -497,6 +498,7 @@ def CCompiler_customize(self, dist, need
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
++
+ # globals for parallel build management
+ try:
+     import threading
+@@ -497,6 +499,7 @@ def CCompiler_customize(self, dist, need
      """
      # See FCompiler.customize for suggested usage.
      log.info('customize %s' % (self.__class__.__name__))
@@ -86,7 +93,7 @@
      customize_compiler(self)
      if need_cxx:
          # In general, distutils uses -Wstrict-prototypes, but this option is
-@@ -683,7 +685,7 @@ def CCompiler_cxx_compiler(self):
+@@ -683,7 +686,7 @@ def CCompiler_cxx_compiler(self):
  
      cxx = copy(self)
      cxx.compiler_so = [cxx.compiler_cxx[0]] + cxx.compiler_so[1:]
@@ -95,7 +102,7 @@
          # AIX needs the ld_so_aix script included with Python
          cxx.linker_so = [cxx.linker_so[0], cxx.compiler_cxx[0]] \
                          + cxx.linker_so[2:]
-@@ -712,7 +714,7 @@ ccompiler._default_compilers += (('linux
+@@ -712,7 +715,7 @@ ccompiler._default_compilers += (('linux
                                   ('nt', 'intelw'),
                                   ('nt', 'intelemw'))
  
@@ -106,15 +113,16 @@
                                   "(for MSC built Python)")
 --- a/numpy/distutils/command/config.py
 +++ b/numpy/distutils/command/config.py
-@@ -3,6 +3,7 @@
- # compilers (they must define linker_exe first).
- # Pearu Peterson
- from __future__ import division, absolute_import, print_function
-+target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
+@@ -24,6 +24,8 @@ from numpy.distutils.command.autodist im
+                                               check_compiler_gcc4)
+ from numpy.distutils.compat import get_exception
  
- import os, signal
- import warnings
-@@ -40,7 +41,7 @@ class config(old_config):
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
++
+ LANG_EXT['f77'] = '.f'
+ LANG_EXT['f90'] = '.f90'
+ 
+@@ -40,7 +42,7 @@ class config(old_config):
          old_config._check_compiler(self)
          from numpy.distutils.fcompiler import FCompiler, new_fcompiler
  
@@ -125,15 +133,16 @@
              # initialize call query_vcvarsall, which throws an IOError, and
 --- a/numpy/distutils/fcompiler/__init__.py
 +++ b/numpy/distutils/fcompiler/__init__.py
-@@ -14,6 +14,7 @@ But note that FCompiler.executables is a
+@@ -41,6 +41,8 @@ from numpy.distutils import _shell_utils
  
- """
- from __future__ import division, absolute_import, print_function
+ from .environment import EnvironmentConfig
+ 
 +target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
++
+ __metaclass__ = type
  
- __all__ = ['FCompiler', 'new_fcompiler', 'show_fcompilers',
-            'dummy_fortran_file']
-@@ -528,7 +529,7 @@ class FCompiler(CCompiler):
+ class CompilerNotFound(Exception):
+@@ -528,7 +530,7 @@ class FCompiler(CCompiler):
          linker_so = self.linker_so
          if linker_so:
              linker_so_flags = self.flag_vars.linker_so
@@ -142,7 +151,7 @@
                  python_lib = get_python_lib(standard_lib=1)
                  ld_so_aix = os.path.join(python_lib, 'config', 'ld_so_aix')
                  python_exp = os.path.join(python_lib, 'config', 'python.exp')
-@@ -745,7 +746,7 @@ class FCompiler(CCompiler):
+@@ -745,7 +747,7 @@ class FCompiler(CCompiler):
      ## class FCompiler
  
  _default_compilers = (
@@ -151,7 +160,7 @@
      ('win32', ('gnu', 'intelv', 'absoft', 'compaqv', 'intelev', 'gnu95', 'g95',
                 'intelvem', 'intelem', 'flang')),
      ('cygwin.*', ('gnu', 'intelv', 'absoft', 'compaqv', 'intelev', 'gnu95', 'g95')),
-@@ -833,7 +834,7 @@ def available_fcompilers_for_platform(os
+@@ -833,7 +835,7 @@ def available_fcompilers_for_platform(os
      if osname is None:
          osname = os.name
      if platform is None:
@@ -177,7 +186,7 @@
  
  
  if is_win64():
-@@ -104,11 +107,11 @@ class GnuFCompiler(FCompiler):
+@@ -104,11 +105,11 @@ class GnuFCompiler(FCompiler):
  
      # Cygwin: f771: warning: -fPIC ignored for target (all code is
      # position independent)
@@ -191,7 +200,7 @@
          for key in ['version_cmd', 'compiler_f77', 'linker_so', 'linker_exe']:
              executables[key].append('-mno-cygwin')
  
-@@ -117,7 +120,7 @@ class GnuFCompiler(FCompiler):
+@@ -117,7 +118,7 @@ class GnuFCompiler(FCompiler):
  
      def get_flags_linker_so(self):
          opt = self.linker_so[1:]
@@ -200,7 +209,7 @@
              target = os.environ.get('MACOSX_DEPLOYMENT_TARGET', None)
              # If MACOSX_DEPLOYMENT_TARGET is set, we simply trust the value
              # and leave it alone.  But, distutils will complain if the
-@@ -149,7 +152,7 @@ class GnuFCompiler(FCompiler):
+@@ -149,7 +150,7 @@ class GnuFCompiler(FCompiler):
              opt.extend(['-undefined', 'dynamic_lookup', '-bundle'])
          else:
              opt.append("-shared")
@@ -209,7 +218,7 @@
              # SunOS often has dynamically loaded symbols defined in the
              # static library libg2c.a  The linker doesn't like this.  To
              # ignore the problem, use the -mimpure-text flag.  It isn't
-@@ -171,9 +174,9 @@ class GnuFCompiler(FCompiler):
+@@ -171,9 +172,9 @@ class GnuFCompiler(FCompiler):
          return None
  
      def get_libgfortran_dir(self):
@@ -221,7 +230,7 @@
              libgfortran_name = 'libgfortran.dylib'
          else:
              libgfortran_name = None
-@@ -193,11 +196,11 @@ class GnuFCompiler(FCompiler):
+@@ -193,11 +194,11 @@ class GnuFCompiler(FCompiler):
  
      def get_library_dirs(self):
          opt = []
@@ -235,7 +244,7 @@
                      d = os.path.normpath(d)
                      path = os.path.join(d, "lib%s.a" % self.g2c)
                      if not os.path.exists(path):
-@@ -227,10 +230,10 @@ class GnuFCompiler(FCompiler):
+@@ -227,10 +228,10 @@ class GnuFCompiler(FCompiler):
          if g2c is not None:
              opt.append(g2c)
          c_compiler = self.c_compiler
@@ -248,7 +257,7 @@
              opt.append('cc_dynamic')
          return opt
  
-@@ -265,14 +268,14 @@ class GnuFCompiler(FCompiler):
+@@ -265,14 +266,14 @@ class GnuFCompiler(FCompiler):
          return []
  
      def runtime_library_dir_option(self, dir):
@@ -265,7 +274,7 @@
          return '-Wl,-rpath%s%s' % (sep, dir)
  
  
-@@ -292,7 +295,7 @@ class Gnu95FCompiler(GnuFCompiler):
+@@ -292,7 +293,7 @@ class Gnu95FCompiler(GnuFCompiler):
          else:
              # use -mno-cygwin flag for gfortran when Python is not
              # Cygwin-Python
@@ -274,7 +283,7 @@
                  for key in [
                          'version_cmd', 'compiler_f77', 'compiler_f90',
                          'compiler_fix', 'linker_so', 'linker_exe'
-@@ -309,7 +312,9 @@ class Gnu95FCompiler(GnuFCompiler):
+@@ -309,7 +310,9 @@ class Gnu95FCompiler(GnuFCompiler):
                            "-fno-second-underscore"] + _EXTRAFLAGS,
          'compiler_fix' : [None, "-Wall",  "-g","-ffixed-form",
                            "-fno-second-underscore"] + _EXTRAFLAGS,
@@ -285,7 +294,7 @@
          'archiver'     : ["ar", "-cr"],
          'ranlib'       : ["ranlib"],
          'linker_exe'   : [None, "-Wall"]
-@@ -318,7 +323,7 @@ class Gnu95FCompiler(GnuFCompiler):
+@@ -318,7 +321,7 @@ class Gnu95FCompiler(GnuFCompiler):
      module_dir_switch = '-J'
      module_include_switch = '-I'
  
@@ -294,7 +303,7 @@
          executables['linker_so'].append('-lpthread')
          if platform.architecture()[0][:2] == '64':
              for key in ['compiler_f77', 'compiler_f90','compiler_fix','linker_so', 'linker_exe']:
-@@ -328,7 +333,7 @@ class Gnu95FCompiler(GnuFCompiler):
+@@ -328,7 +331,7 @@ class Gnu95FCompiler(GnuFCompiler):
  
      def _universal_flags(self, cmd):
          """Return a list of -arch flags for every supported architecture."""
@@ -303,7 +312,7 @@
              return []
          arch_flags = []
          # get arches the C compiler gets.
-@@ -358,7 +363,7 @@ class Gnu95FCompiler(GnuFCompiler):
+@@ -358,7 +361,7 @@ class Gnu95FCompiler(GnuFCompiler):
  
      def get_library_dirs(self):
          opt = GnuFCompiler.get_library_dirs(self)
@@ -312,7 +321,7 @@
              c_compiler = self.c_compiler
              if c_compiler and c_compiler.compiler_type == "msvc":
                  target = self.get_target()
-@@ -377,9 +382,9 @@ class Gnu95FCompiler(GnuFCompiler):
+@@ -377,9 +380,9 @@ class Gnu95FCompiler(GnuFCompiler):
  
      def get_libraries(self):
          opt = GnuFCompiler.get_libraries(self)
@@ -326,13 +335,16 @@
                  if "gcc" in opt:
 --- a/numpy/distutils/misc_util.py
 +++ b/numpy/distutils/misc_util.py
-@@ -1,4 +1,5 @@
- from __future__ import division, absolute_import, print_function
-+target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
+@@ -18,6 +18,8 @@ try:
+ except ImportError:
+     from dummy_threading import local as tlocal
  
- import os
- import re
-@@ -321,7 +322,7 @@ def make_temp_file(suffix='', prefix='',
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
++
+ # stores temporary directory of each thread to only create one per thread
+ _tdata = tlocal()
+ 
+@@ -321,7 +323,7 @@ def make_temp_file(suffix='', prefix='',
  # Hooks for colored terminal output.
  # See also https://web.archive.org/web/20100314204946/http://www.livinglogic.de/Python/ansistyle
  def terminal_has_colors():
@@ -341,7 +353,7 @@
          # Avoid importing curses that causes illegal operation
          # with a message:
          #  PYTHON2 caused an invalid page fault in
-@@ -384,14 +385,14 @@ def blue_text(s):
+@@ -384,14 +386,14 @@ def blue_text(s):
  #########################
  
  def cyg2win32(path):
@@ -358,7 +370,7 @@
          if os.environ.get('OSTYPE', '')=='msys':
              return True
          if os.environ.get('MSYSTEM', '')=='MINGW32':
-@@ -677,12 +678,12 @@ def get_shared_lib_extension(is_python_e
+@@ -677,12 +679,12 @@ def get_shared_lib_extension(is_python_e
          # hardcode known values, config vars (including SHLIB_SUFFIX) are
          # unreliable (see #3182)
          # darwin, windows and debug linux are wrong in 3.3.1 and older
@@ -375,7 +387,7 @@
              so_ext = '.dll'
          else:
              # fall back to config vars for unknown platforms
-@@ -1843,7 +1844,7 @@ class Configuration(object):
+@@ -1843,7 +1845,7 @@ class Configuration(object):
              if m:
                  return int(m.group('revision'))
  
@@ -386,15 +398,20 @@
              entries = njoin(path, '.svn', 'entries')
 --- a/numpy/distutils/system_info.py
 +++ b/numpy/distutils/system_info.py
-@@ -120,6 +120,7 @@ NO WARRANTY IS EXPRESSED OR IMPLIED.  US
+@@ -158,10 +158,12 @@ import distutils.ccompiler
+ import tempfile
+ import shutil
  
- """
- from __future__ import division, absolute_import, print_function
 +target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
  
- import sys
- import os
-@@ -215,7 +216,7 @@ def libpaths(paths, bits):
+ # Determine number of bits
+ import platform
+ _bits = {'32bit': 32, '64bit': 64}
++# FIXME: I think this is not really important for cross-building
+ platform_bits = _bits[platform.architecture()[0]]
+ 
+ 
+@@ -215,7 +217,7 @@ def libpaths(paths, bits):
      return out
  
  
@@ -403,7 +420,7 @@
      default_lib_dirs = ['C:\\',
                          os.path.join(distutils.sysconfig.EXEC_PREFIX,
                                       'libs')]
-@@ -755,15 +756,15 @@ class system_info(object):
+@@ -755,15 +757,15 @@ class system_info(object):
          if c.compiler_type != 'msvc':
              # MSVC doesn't understand binutils
              static_exts.append('.a')
@@ -422,7 +439,7 @@
              exts.append('.dylib')
          return exts
  
-@@ -802,7 +803,7 @@ class system_info(object):
+@@ -802,7 +804,7 @@ class system_info(object):
      def _find_lib(self, lib_dir, lib, exts):
          assert is_string(lib_dir)
          # under windows first try without 'lib' prefix
@@ -431,7 +448,7 @@
              lib_prefixes = ['', 'lib']
          else:
              lib_prefixes = ['lib']
-@@ -1091,7 +1092,7 @@ class mkl_info(system_info):
+@@ -1091,7 +1093,7 @@ class mkl_info(system_info):
                      define_macros=[('SCIPY_MKL_H', None),
                                     ('HAVE_CBLAS', None)],
                      include_dirs=incl_dirs)
@@ -440,7 +457,7 @@
              pass  # win32 has no pthread library
          else:
              dict_append(info, libraries=['pthread'])
-@@ -1110,7 +1111,7 @@ class atlas_info(system_info):
+@@ -1110,7 +1112,7 @@ class atlas_info(system_info):
      section = 'atlas'
      dir_env_var = 'ATLAS'
      _lib_names = ['f77blas', 'cblas']
@@ -449,7 +466,7 @@
          _lib_atlas = ['atlas_r']
          _lib_lapack = ['alapack_r']
      else:
-@@ -1185,7 +1186,7 @@ class atlas_info(system_info):
+@@ -1185,7 +1187,7 @@ class atlas_info(system_info):
          lapack_name = lapack['libraries'][0]
          lapack_lib = None
          lib_prefixes = ['lib']
@@ -458,7 +475,7 @@
              lib_prefixes.append('')
          for e in self.library_extensions():
              for prefix in lib_prefixes:
-@@ -1905,7 +1906,7 @@ class accelerate_info(system_info):
+@@ -1905,7 +1907,7 @@ class accelerate_info(system_info):
              libraries = self.get_libs('libraries', ['accelerate', 'veclib'])
          libraries = [lib.strip().lower() for lib in libraries]
  
@@ -467,7 +484,7 @@
                  not os.getenv('_PYTHON_HOST_PLATFORM', None)):
              # Use the system BLAS from Accelerate or vecLib under OSX
              args = []
-@@ -2007,7 +2008,7 @@ class x11_info(system_info):
+@@ -2007,7 +2009,7 @@ class x11_info(system_info):
                               default_include_dirs=default_x11_include_dirs)
  
      def calc_info(self):
@@ -476,7 +493,7 @@
              return
          lib_dirs = self.get_lib_dirs()
          include_dirs = self.get_include_dirs()
-@@ -2218,7 +2219,7 @@ class agg2_info(system_info):
+@@ -2218,7 +2220,7 @@ class agg2_info(system_info):
                  break
          if not src_dir:
              return
@@ -487,13 +504,16 @@
          else:
 --- a/numpy/linalg/setup.py
 +++ b/numpy/linalg/setup.py
-@@ -1,4 +1,5 @@
- from __future__ import division, print_function
-+target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
- 
+@@ -3,6 +3,8 @@ from __future__ import division, print_f
  import os
  import sys
-@@ -33,7 +34,7 @@ def configuration(parent_package='', top
+ 
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
++
+ def configuration(parent_package='', top_path=None):
+     from numpy.distutils.misc_util import Configuration
+     from numpy.distutils.system_info import get_info
+@@ -33,7 +35,7 @@ def configuration(parent_package='', top
              print("### Warning:  Using unoptimized lapack ###")
              return all_sources
          else:
@@ -504,13 +524,17 @@
              return [all_sources[0]]
 --- a/numpy/random/setup.py
 +++ b/numpy/random/setup.py
-@@ -1,4 +1,5 @@
- from __future__ import division, print_function
-+target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
+@@ -5,6 +5,9 @@ import sys
+ from distutils.dep_util import newer
+ from distutils.msvccompiler import get_build_version as get_msvc_build_version
  
- from os.path import join
- import sys
-@@ -23,14 +24,14 @@ def configuration(parent_package='',top_
++import os
++target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
++
+ def needs_mingw_ftime_workaround():
+     # We need the mingw workaround for _ftime if the msvc runtime version is
+     # 7.1 or above and we build with mingw ...
+@@ -23,14 +26,14 @@ def configuration(parent_package='',top_
      def generate_libraries(ext, build_dir):
          config_cmd = config.get_config_cmd()
          libs = get_mathlibs()
@@ -529,14 +553,14 @@
          defs = [('_FILE_OFFSET_BITS', '64'),
 --- a/setup.py
 +++ b/setup.py
-@@ -18,6 +18,7 @@ All NumPy wheels distributed on PyPI are
+@@ -26,6 +26,7 @@ import sys
+ import subprocess
+ import textwrap
  
- """
- from __future__ import division, print_function
 +target_platform = os.getenv("TARGET_PLATFORM", sys.platform)
  
- DOCLINES = (__doc__ or '').split("\n")
- 
+ if sys.version_info[:2] < (2, 7) or (3, 0) <= sys.version_info[:2] < (3, 4):
+     raise RuntimeError("Python version 2.7 or >= 3.4 required.")
 @@ -350,7 +351,7 @@ def setup_package():
      write_version_py()
  

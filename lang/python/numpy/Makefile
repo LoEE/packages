@@ -20,6 +20,9 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-numpy-$(PKG_VERSION)/numpy-$(PKG_VE
 PKG_LICENSE:=BSD License
 PKG_LICENSE_FILES:=LICENSE
 
+HOST_BUILD_DEPENDS:=python3/host
+
+include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python3-package.mk
 
@@ -48,6 +51,16 @@ define Py3Build/Compile
 	)
 endef
 
+define Host/Compile
+	$(call Build/Compile/HostPy3Mod,,\
+		install --prefix="" --root="$(STAGING_DIR_HOSTPKG)",\
+		F90="$(TARGET_CROSS)gfortran"\
+	)
+endef
+
+Host/Install:=
+
+$(eval $(call HostBuild))
 
 $(eval $(call Py3Package,python3-numpy))
 $(eval $(call BuildPackage,python3-numpy))
