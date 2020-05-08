@@ -21,46 +21,24 @@ PKG_LICENSE:=BSD License
 PKG_LICENSE_FILES:=LICENSE
 
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
 PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
-define Package/python-w1thermsensor/Default
+define Package/python3-w1thermsensor
   SECTION:=lang-python
   CATEGORY:=Languages
   SUBMENU:=Python
   URL:=https://github.com/timofurrer/w1thermsensor
-endef
-
-define Package/python-w1thermsensor
-$(call Package/python-w1thermsensor/Default)
-  TITLE:=python-w1thermsensor
-  DEPENDS:=+PACKAGE_python-w1thermsensor:python-light
-  VARIANT:=python
-endef
-
-define Package/python3-w1thermsensor
-$(call Package/python-w1thermsensor/Default)
   TITLE:=python3-w1thermsensor
   DEPENDS:=+PACKAGE_python3-w1thermsensor:python3-light
   VARIANT:=python3
 endef
 
-define Package/python-w1thermsensor/description
+define Package/python3-w1thermsensor/description
 A Python package and CLI tool to work with w1 temperature sensors like DS1822,
 DS18S20 & DS18B20 on the Raspbery Pi, Beagle Bone and other devices.
 endef
-
-define Package/python3-w1thermsensor/description
-$(call Package/python-w1thermsensor/description)
-.
-(Variant for Python3)
-endef
-
-$(eval $(call PyPackage,python-w1thermsensor))
-$(eval $(call BuildPackage,python-w1thermsensor))
-$(eval $(call BuildPackage,python-w1thermsensor-src))
 
 $(eval $(call Py3Package,python3-w1thermsensor))
 $(eval $(call BuildPackage,python3-w1thermsensor))
