@@ -21,47 +21,25 @@ PKG_LICENSE:=BSD License
 PKG_LICENSE_FILES:=LICENSE
 
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
 PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
-define Package/python-elasticsearch/Default
+define Package/python3-elasticsearch
   SECTION:=lang-python
   CATEGORY:=Languages
   SUBMENU:=Python
   URL:=http://elasticsearch-py.rtfd.org
-endef
-
-define Package/python-elasticsearch
-$(call Package/python-elasticsearch/Default)
-  TITLE:=python-elasticsearch
-  DEPENDS:=+PACKAGE_python-elasticsearch:python-light
-  VARIANT:=python
-endef
-
-define Package/python3-elasticsearch
-$(call Package/python-elasticsearch/Default)
   TITLE:=python3-elasticsearch
   DEPENDS:=+PACKAGE_python3-elasticsearch:python3-light
   VARIANT:=python3
 endef
 
-define Package/python-elasticsearch/description
+define Package/python3-elasticsearch/description
 Official low-level client for Elasticsearch. Its goal is to provide common
 ground for all Elasticsearch-related code in Python; because of this it tries to
 be opinion-free and very extendable.
 endef
-
-define Package/python3-elasticsearch/description
-$(call Package/python-elasticsearch/description)
-.
-(Variant for Python3)
-endef
-
-$(eval $(call PyPackage,python-elasticsearch))
-$(eval $(call BuildPackage,python-elasticsearch))
-$(eval $(call BuildPackage,python-elasticsearch-src))
 
 $(eval $(call Py3Package,python3-elasticsearch))
 $(eval $(call BuildPackage,python3-elasticsearch))
