@@ -21,47 +21,25 @@ PKG_LICENSE:=BSD License
 PKG_LICENSE_FILES:=LICENSE
 
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
 PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
-define Package/python-psutil/Default
+define Package/python3-psutil
   SECTION:=lang-python
   CATEGORY:=Languages
   SUBMENU:=Python
   URL:=http://www.pycrypto.org/
-endef
-
-define Package/python-psutil
-$(call Package/python-psutil/Default)
-  TITLE:=python-psutil
-  DEPENDS:=+PACKAGE_python-psutil:python-light
-  VARIANT:=python
-endef
-
-define Package/python3-psutil
-$(call Package/python-psutil/Default)
   TITLE:=python3-psutil
   DEPENDS:=+PACKAGE_python3-psutil:python3-light
   VARIANT:=python3
 endef
 
-define Package/python-psutil/description
+define Package/python3-psutil/description
 psutil (process and system utilities) is a cross-platform library
 for retrieving information on running processes and system
 utilization (CPU, memory, disks, network, sensors) in Python.
 endef
-
-define Package/python3-psutil/description
-$(call Package/python-psutil/description)
-.
-(Variant for Python3)
-endef
-
-$(eval $(call PyPackage,python-psutil))
-$(eval $(call BuildPackage,python-psutil))
-$(eval $(call BuildPackage,python-psutil-src))
 
 $(eval $(call Py3Package,python3-psutil))
 $(eval $(call BuildPackage,python3-psutil))
