@@ -21,46 +21,24 @@ PKG_LICENSE:=BSD License
 PKG_LICENSE_FILES:=LICENSE
 
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
 PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
-define Package/python-ujson/Default
+define Package/python3-ujson
   SECTION:=lang-python
   CATEGORY:=Languages
   SUBMENU:=Python
   URL:=https://pypi.org/project/ujson/
-endef
-
-define Package/python-ujson
-$(call Package/python-ujson/Default)
-  TITLE:=python-ujson
-  DEPENDS:=+PACKAGE_python-ujson:python-light
-  VARIANT:=python
-endef
-
-define Package/python3-ujson
-$(call Package/python-ujson/Default)
   TITLE:=python3-ujson
   DEPENDS:=+PACKAGE_python3-ujson:python3-light
   VARIANT:=python3
 endef
 
-define Package/python-ujson/description
+define Package/python3-ujson/description
 UltraJSON is an ultra fast JSON encoder and decoder written in pure C with
 bindings for Python 2.5+ and 3.
 endef
-
-define Package/python3-ujson/description
-$(call Package/python-ujson/description)
-.
-(Variant for Python3)
-endef
-
-$(eval $(call PyPackage,python-ujson))
-$(eval $(call BuildPackage,python-ujson))
-$(eval $(call BuildPackage,python-ujson-src))
 
 $(eval $(call Py3Package,python3-ujson))
 $(eval $(call BuildPackage,python3-ujson))
