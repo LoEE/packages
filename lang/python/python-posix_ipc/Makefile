@@ -22,46 +22,24 @@ PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Jakub Piotr Cłapa <jpc@loee.pl>
 
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
 PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
-define Package/python-posix_ipc/Default
+define Package/python3-posix_ipc
   SECTION:=lang-python
   CATEGORY:=Languages
   SUBMENU:=Python
   URL:=http://www.pycrypto.org/
-endef
-
-define Package/python-posix_ipc
-$(call Package/python-posix_ipc/Default)
-  TITLE:=python-posix_ipc
-  DEPENDS:=+python-light
-  VARIANT:=python
-endef
-
-define Package/python3-posix_ipc
-$(call Package/python-posix_ipc/Default)
   TITLE:=python3-posix_ipc
   DEPENDS:=+python3-light
   VARIANT:=python3
 endef
 
-define Package/python-posix_ipc/description
+define Package/python3-posix_ipc/description
 The Python extension module posix_ipc gives Python access to POSIX inter-process
 semaphores, shared memory and message queues
 endef
-
-define Package/python3-posix_ipc/description
-$(call Package/python-posix_ipc/description)
-.
-(Variant for Python3)
-endef
-
-$(eval $(call PyPackage,python-posix_ipc))
-$(eval $(call BuildPackage,python-posix_ipc))
-$(eval $(call BuildPackage,python-posix_ipc-src))
 
 $(eval $(call Py3Package,python3-posix_ipc))
 $(eval $(call BuildPackage,python3-posix_ipc))
