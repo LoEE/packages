@@ -1,13 +1,17 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=luajit
-PKG_VERSION:=2.1.0-beta3
-PKG_RELEASE:=4
+LUAJIT_VERSION:=2.1.0-beta3
 
-PKG_SOURCE:=LuaJIT-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://luajit.org/download
-PKG_HASH:=1ad2e34b111c802f9d0cdf019e986909123237a28c746b21295b63c9e785d9c3
-PKG_BUILD_DIR:=$(BUILD_DIR)/LuaJIT-$(PKG_VERSION)
+PKG_NAME:=luajit
+PKG_SOURCE_DATE:=2020-05-08-322db02
+PKG_VERSION:=$(LUAJIT_VERSION)-$(PKG_SOURCE_DATE)
+PKG_RELEASE:=1
+
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/LuaJIT/LuaJIT.git
+PKG_SOURCE_VERSION:=322db0208160169cbfcd6cc2f93d5e0dfcb2081e
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
+PKG_MIRROR_HASH:=eb19df78d3e4fa3c85376cd9124e4b5fadb8e8369e3a81c86cd0c6dc096982e8
 
 PKG_MAINTAINER:=Morteza Milani <milani@pichak.co>
 PKG_LICENSE:=MIT
@@ -63,7 +67,7 @@ define Build/InstallDev
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/*.{a,so*} $(1)/usr/lib/
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/luajit.pc $(1)/usr/lib/pkgconfig/
-	$(CP) $(PKG_INSTALL_DIR)/usr/bin/luajit-$(PKG_VERSION) $(PKG_INSTALL_DIR)/usr/bin/$(PKG_NAME)
+	$(CP) $(PKG_INSTALL_DIR)/usr/bin/luajit-$(LUAJIT_VERSION) $(PKG_INSTALL_DIR)/usr/bin/$(PKG_NAME)
 endef
 
 define Package/luajit/install
@@ -72,7 +76,7 @@ define Package/luajit/install
 	$(INSTALL_DIR) $(1)/usr/share/luajit-2.1.0-beta3/jit
 	$(CP) $(PKG_INSTALL_DIR)/usr/share/luajit-2.1.0-beta3/jit/*.lua $(1)/usr/share/luajit-2.1.0-beta3/jit
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(CP) $(PKG_INSTALL_DIR)/usr/bin/luajit-$(PKG_VERSION) $(1)/usr/bin/$(PKG_NAME)
+	$(CP) $(PKG_INSTALL_DIR)/usr/bin/luajit-$(LUAJIT_VERSION) $(1)/usr/bin/$(PKG_NAME)
 endef
 
 define Host/Compile
@@ -86,7 +90,7 @@ define Host/Install
 	$(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR) \
 		DPREFIX=$(STAGING_DIR_HOSTPKG) \
 		install
-	$(CP) $(STAGING_DIR_HOSTPKG)/bin/luajit-$(PKG_VERSION) $(STAGING_DIR_HOSTPKG)/bin/$(PKG_NAME)
+	$(CP) $(STAGING_DIR_HOSTPKG)/bin/luajit-$(LUAJIT_VERSION) $(STAGING_DIR_HOSTPKG)/bin/$(PKG_NAME)
 endef
 
 $(eval $(call HostBuild,luajit))
