@@ -1,0 +1,21 @@
+#!/bin/sh
+
+name=$1
+
+: "${LOGDIR:="/tmp/log/$name"}" "${SERVICEDIR:="/tmp/service/$name"}"
+
+mkdir -p "$SERVICEDIR/log"
+cd "$SERVICEDIR" || exit 2
+
+touch run log/run
+chmod a+x run log/run
+
+cat > log/run <<EOF
+#!/bin/sh
+exec 2>&1
+dir=$LOGDIR
+mkdir -p \$dir
+exec svlogd -tm \$dir
+EOF
+
+exec cat > run
