@@ -53,7 +53,7 @@ define Build/Compile
 endef
 
 define Package/runit/install
-	$(INSTALL_DIR) $(1)/bin
+	$(INSTALL_DIR) $(1)/bin $(1)/etc/init.d
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/chpst $(1)/bin/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/runit $(1)/bin/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/runit-init $(1)/bin/
@@ -63,6 +63,27 @@ define Package/runit/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/sv $(1)/bin/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/svlogd $(1)/bin/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/utmpset $(1)/bin/
+	$(INSTALL_BIN) ./files/runsvdir-init.d $(1)/etc/init.d/runsvdir
+endef
+
+define Package/runit/postinst
+#!/bin/sh
+# check if we are on real system
+if [ -z "$${IPKG_INSTROOT}" ]; then
+    echo "Enabling rc.d symlink for runsvdir"
+    /etc/init.d/runsvdir enable
+fi
+exit 0
+endef
+
+define Package/runit/prerm
+#!/bin/sh
+# check if we are on real system
+if [ -z "$${IPKG_INSTROOT}" ]; then
+    echo "Removing rc.d symlink for runsvdir"
+    /etc/init.d/runsvdir disable
+fi
+exit 0
 endef
 
 $(eval $(call BuildPackage,runit))
