@@ -54,15 +54,15 @@ endef
 
 define Package/runit/install
 	$(INSTALL_DIR) $(1)/bin
-	$(CP) $(PKG_BUILD_DIR)/src/chpst $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/runit $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/runit-init $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/runsv $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/runsvchdir $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/runsvdir $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/sv $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/svlogd $(1)/bin/
-	$(CP) $(PKG_BUILD_DIR)/src/utmpset $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/chpst $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/runit $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/runit-init $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/runsv $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/runsvchdir $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/runsvdir $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/sv $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/svlogd $(1)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/utmpset $(1)/bin/
 endef
 
 $(eval $(call BuildPackage,runit))
